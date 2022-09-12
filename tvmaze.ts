@@ -127,7 +127,12 @@ interface EpisodeInterface {
      method: "GET",
    });
 
-  return response.data;
+   return response.data.map((e: EpisodeInterface) => ({
+    id: e.id,
+    name: e.name,
+    season: e.season,
+    number: e.number,
+  }));
  }
 
 

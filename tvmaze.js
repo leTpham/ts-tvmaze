@@ -12776,6 +12776,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 var axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 var $showsList = $("#showsList");
+var $episodesList = $("#episodesList");
 var $episodesArea = $("#episodesArea");
 var $searchForm = $("#searchForm");
 var MISSING_IMG = "https://tinyurl.com/tv-missing";
@@ -12872,7 +12873,12 @@ function getEpisodesOfShow(id) {
                     })];
                 case 1:
                     response = _a.sent();
-                    return [2 /*return*/, response.data];
+                    return [2 /*return*/, response.data.map(function (e) { return ({
+                            id: e.id,
+                            name: e.name,
+                            season: e.season,
+                            number: e.number,
+                        }); })];
             }
         });
     });
@@ -12881,10 +12887,29 @@ function getEpisodesOfShow(id) {
 function populateEpisodes(episodes) {
     $episodesList.empty();
     episodes.forEach(function (episode) {
-        var $episode = $("\n      <ul>\n      </ul>\n\n    ");
-        $episodesArea.append($episode);
+        var $episode = $("\n\n    <li>".concat(episode.name, " (season ").concat(episode.season, ", number ").concat(episode.number, ")</li>\n\n    "));
+        $episodesList.append($episode);
+    });
+    $episodesArea.show();
+}
+function getAndDisplayEpisodes(evt) {
+    return __awaiter(this, void 0, void 0, function () {
+        var showId, episodes;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    showId = $(evt.target).closest("[data-show-id]").data("show-id");
+                    return [4 /*yield*/, getEpisodesOfShow(showId)];
+                case 1:
+                    episodes = _a.sent();
+                    populateEpisodes(episodes);
+                    return [2 /*return*/];
+            }
+        });
     });
 }
+;
+$showsList.on("click", ".Show-getEpisodes", getAndDisplayEpisodes);
 
 
 /***/ })
