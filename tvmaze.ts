@@ -22,7 +22,7 @@ interface ShowInterface {
 
 async function getShowsByTerm(term: string): Promise<ShowInterface[]> {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-  const response: { data: []; } =
+  const response =
     await axios.get('http://api.tvmaze.com/search/shows',
       { params: { q: term } });
 
@@ -49,35 +49,13 @@ async function getShowsByTerm(term: string): Promise<ShowInterface[]> {
     });
   return showList;
 
-
-
-  // return [
-  //   {
-  //     id: 1767,
-  //     name: "The Bletchley Circle",
-  //     summary:
-  //       `<p><b>The Bletchley Circle</b> follows the journey of four ordinary
-  //          women with extraordinary skills that helped to end World War II.</p>
-  //        <p>Set in 1952, Susan, Millie, Lucy and Jean have returned to their
-  //          normal lives, modestly setting aside the part they played in
-  //          producing crucial intelligence, which helped the Allies to victory
-  //          and shortened the war. When Susan discovers a hidden code behind an
-  //          unsolved murder she is met by skepticism from the police. She
-  //          quickly realises she can only begin to crack the murders and bring
-  //          the culprit to justice with her former friends.</p>`,
-  //     image:
-  //         "http://static.tvmaze.com/uploads/images/medium_portrait/147/369403.jpg"
-  //   }
-  // ]
 }
 
 
 /** Given list of shows, create markup for each and to DOM */
 
-function populateShows(shows: []) {
+function populateShows(shows: ShowInterface[]) {
   $showsList.empty();
-
-
 
   shows.forEach((show: ShowInterface) => {
     const $show = $(
@@ -98,8 +76,6 @@ function populateShows(shows: []) {
        </div>
       `);
     $showsList.append($show);
-
-
   });
 }
 
@@ -110,7 +86,7 @@ function populateShows(shows: []) {
 
 async function searchForShowAndDisplay() {
 
-  const term = $("#searchForm-term").val();
+  const term = $("#searchForm-term").val() as string;
 
   const shows: ShowInterface[] = await getShowsByTerm(term);
 
