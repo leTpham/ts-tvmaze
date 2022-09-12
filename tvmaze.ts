@@ -2,6 +2,7 @@ import axios from "axios";
 import * as $ from 'jquery';
 
 const $showsList = $("#showsList");
+const $episodesList = $("#episodesList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 const MISSING_IMG = "https://tinyurl.com/tv-missing"
@@ -13,6 +14,7 @@ interface ShowInterface {
   summary: string;
   image: { medium: string; };
 }
+
 
 
 /** Given a search term, search for tv shows that match that query.
@@ -137,12 +139,23 @@ function populateEpisodes(episodes: EpisodeInterface[]) {
 
   episodes.forEach((episode: EpisodeInterface) => {
     const $episode = $(`
-      <ul>
-      </ul>
+
+    <li>${episode.name} (season ${episode.season}, number ${episode.number})</li>
 
     `);
-    $episodesArea.append($episode);
+    $episodesList.append($episode);
   });
 
+  $episodesArea.show();
 
 }
+
+async function  getAndDisplayEpisodes(evt: JQuery.ClickEvent): Promise<void> {
+
+  const showId = $(evt.target).closest("[data-show-id]").data("show-id");
+
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
+};
+
+$showsList.on("click",".Show-getEpisodes", getAndDisplayEpisodes);
