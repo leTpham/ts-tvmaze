@@ -5,6 +5,8 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 
+const TVMAZE_API_URL = "http://api.tvmaze.com";
+
 interface ShowInterface {
   id: number;
   name: string;
@@ -101,12 +103,46 @@ $searchForm.on("submit", async function (evt) {
 });
 
 
+interface EpisodeInterface {
+  id: number;
+  name: string;
+  season: number;
+  number: number;
+}
+
+
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+
+
+ async function getEpisodesOfShow(id:number): Promise<EpisodeInterface[]> {
+
+   const response = await axios({
+     baseURL: TVMAZE_API_URL,
+     url: `shows/${id}/episodes`,
+     method: "GET",
+   });
+
+  return response.data;
+ }
+
 
 /** Write a clear docstring for this function... */
 
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes: EpisodeInterface[]) {
+
+  $episodesList.empty();
+
+  episodes.forEach((episode: EpisodeInterface) => {
+    const $episode = $(`
+      <ul>
+      </ul>
+
+    `);
+    $episodesArea.append($episode);
+  });
+
+
+}
