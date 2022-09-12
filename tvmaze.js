@@ -12778,6 +12778,8 @@ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"
 var $showsList = $("#showsList");
 var $episodesArea = $("#episodesArea");
 var $searchForm = $("#searchForm");
+var MISSING_IMG = "https://tinyurl.com/tv-missing";
+var TVMAZE_API_URL = "http://api.tvmaze.com";
 /** Given a search term, search for tv shows that match that query.
  *
  *  Returns (promise) array of show objects: [show, show, ...].
@@ -12798,13 +12800,13 @@ function getShowsByTerm(term) {
                             fallBackImage = "https://tinyurl.com/tv-missing";
                         }
                         else {
-                            fallBackImage = x.show.image.original;
+                            fallBackImage = x.show.image.medium;
                         }
                         var result = {
                             id: x.show.id,
                             name: x.show.name,
                             summary: x.show.summary,
-                            image: { original: fallBackImage }
+                            image: x.show.image ? { medium: fallBackImage } : { medium: MISSING_IMG }
                         };
                         return result;
                     });
@@ -12817,7 +12819,7 @@ function getShowsByTerm(term) {
 function populateShows(shows) {
     $showsList.empty();
     shows.forEach(function (show) {
-        var $show = $("<div data-show-id=\"".concat(show.id, "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg\"\n              alt=\"Bletchly Circle San Francisco\"\n              class=\"w-25 me-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">").concat(show.name, "</h5>\n             <div><small>").concat(show.summary, "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      "));
+        var $show = $("<div data-show-id=\"".concat(show.id, "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"").concat(show.image.medium, "\"\n              alt=\"").concat(show.name, "\"\n              class=\"w-25 me-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">").concat(show.name, "</h5>\n             <div><small>").concat(show.summary, "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      "));
         $showsList.append($show);
     });
 }
@@ -12858,9 +12860,31 @@ $searchForm.on("submit", function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
-// async function getEpisodesOfShow(id) { }
+function getEpisodesOfShow(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, axios_1.default)({
+                        baseURL: TVMAZE_API_URL,
+                        url: "shows/".concat(id, "/episodes"),
+                        method: "GET",
+                    })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.data];
+            }
+        });
+    });
+}
 /** Write a clear docstring for this function... */
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) {
+    $episodesList.empty();
+    episodes.forEach(function (episode) {
+        var $episode = $("\n      <ul>\n      </ul>\n\n    ");
+        $episodesArea.append($episode);
+    });
+}
 
 
 /***/ })

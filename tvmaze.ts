@@ -4,14 +4,14 @@ import * as $ from 'jquery';
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
-
+const MISSING_IMG = "https://tinyurl.com/tv-missing"
 const TVMAZE_API_URL = "http://api.tvmaze.com";
 
 interface ShowInterface {
   id: number;
   name: string;
   summary: string;
-  image: { original: string; } | null;
+  image: { medium: string; };
 }
 
 
@@ -38,14 +38,14 @@ async function getShowsByTerm(term: string): Promise<ShowInterface[]> {
         fallBackImage = "https://tinyurl.com/tv-missing";
       }
       else {
-        fallBackImage = x.show.image.original;
+        fallBackImage = x.show.image.medium;
       }
 
       const result: ShowInterface = {
         id: x.show.id,
         name: x.show.name,
         summary: x.show.summary,
-        image: { original: fallBackImage }
+        image: x.show.image ? { medium: fallBackImage } : {medium : MISSING_IMG}
       };
       return result;
     });
@@ -64,8 +64,8 @@ function populateShows(shows: ShowInterface[]) {
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
-              alt="Bletchly Circle San Francisco"
+              src="${show.image.medium}"
+              alt="${show.name}"
               class="w-25 me-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
